@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>قیمت طلا و دلار</title>
+    <style>
+        body { background: #121212; color: #fff; font-family: 'Tahoma'; text-align: center; padding: 50px; }
+        .container { max-width: 500px; margin: auto; background: #1e1e1e; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .price { font-size: 2.5em; margin: 20px 0; padding: 20px; border-radius: 15px; background: linear-gradient(45deg, #0095ff, #1239d5); color: #000; font-weight: bold; }
+        .gold { border: 3px solid #1609d7; }
+        .dollar { border: 3px solid #00bfff; background: linear-gradient(45deg, #00bfff, #4dd0e1); }
+        button { background: #53bb56; color: white; border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 25px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #45a049; transform: scale(1.05); }
+        .loading { color: #ccc; }
+        .error { color: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> قیمت لحظه‌ای طلا و دلار</h1>
+        <div id="gold" class="price gold">طلای ۱۸ عیار: در حال بارگذاری...</div>
+        <div id="dollar" class="price dollar">دلار آزاد: در حال بارگذاری...</div>
+        <button onclick="updatePrices()">🔄 به‌روزرسانی</button>
+        <p id="timestamp"></p>
+    </div>
+
+    <script>
+        function updatePrices() {
+            document.getElementById('gold').innerHTML = 'در حال بارگذاری...';
+            document.getElementById('dollar').innerHTML = 'در حال بارگذاری...';
+            fetch('/api/prices')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('gold').innerHTML = `طلای ۱۸ عیار: ${data.gold_18k} ریال`;
+                    document.getElementById('dollar').innerHTML = `دلار آزاد: ${data.dollar_free} ریال`;
+                    document.getElementById('timestamp').innerHTML = data.timestamp;
+                })
+                .catch(() => {
+                    document.getElementById('gold').innerHTML = '<span class="error">خطا در دریافت</span>';
+                    document.getElementById('dollar').innerHTML = '<span class="error">خطا در دریافت</span>';
+                });
+        }
+
+        updatePrices();
+        setInterval(updatePrices, 500000);
+    </script>
+</body>
+</html>
